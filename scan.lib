@@ -1,0 +1,19 @@
+#!/bin/bash
+# Making Functions
+nmap_scan()
+{
+    nmap "$DOMAIN" -Pn > "$DIRECTORY/nmap"
+    echo "THE RESULT OF NMAP SCAN IS STORED IN $DIRECTORY/nmap"
+}
+
+dirsearch_scan()
+{
+    python3 dirsearch.py -u "$DOMAIN" -e php --output-file="$DIRECTORY/dirsearch"
+    echo "THE RESULT OF DIRSEARCH IS STORED IN $DIRECTORY/dirsearch"
+}
+
+crt_scan()
+{
+    curl "https://crt.sh/?q=$DOMAIN&output=json" -o $DIRECTORY/crt
+    echo "THE RESULT OF cert parsing STORED IN $DIRECTORY/crt"
+}
