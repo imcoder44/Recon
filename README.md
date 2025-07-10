@@ -1,220 +1,147 @@
 # 🔍 Recon Automation Tool
 
-This is a Bash-based reconnaissance automation tool designed to streamline the recon phase of ethical hacking, penetration testing, and bug bounty hunting. It combines the power of tools like **Nmap**, **Dirsearch**, and **crt.sh**, and supports flexible scan modes, multi-domain scanning, and interactive operation.
+![license](https://img.shields.io/github/license/imcoder44/Recon?style=for-the-badge)
+![last‑commit](https://img.shields.io/github/last-commit/imcoder44/Recon?style=for-the-badge)
+![issues](https://img.shields.io/github/issues/imcoder44/Recon?style=for-the-badge)
+
+A Bash‑driven reconnaissance framework that automates common bug‑bounty and pentest recon tasks.  
+It wraps **Nmap**, **Dirsearch**, and **crt.sh** lookups (with room for more) into a single, modular workflow supporting:
+
+- multi‑domain scanning  
+- interactive mode  
+- selective scan modes (`nmap-only`, `dirsearch-only`, `crt-only`, `all`)  
+- tidy per‑domain reports 🌐📄  
 
 ---
 
-## 📂 Repository Structure
+## 📂 Directory Layout
 
 ```
 
-recon-tool/
-├── recon.sh             # Main recon automation script
-├── scan.lib             # Library of scanning functions (nmap, dirsearch, crt)
-├── dirsearch/           # Clone of dirsearch tool
-└── README.md            # This file
+Recon/
+├── recon.sh             # Main launcher
+├── scan.lib             # Function library (nmap / dirsearch / crt)
+├── dirsearch/           # External clone of dirsearch (see setup below)
+└── README.md
 
 ````
 
 ---
 
-## 📥 Cloning the Repository
+## 🚀 Quick Start
+
+### 1. Clone
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/recon-tool.git
-cd recon-tool
+git clone https://github.com/imcoder44/Recon.git
+cd Recon
 ````
 
----
-
-## ⚙️ Dirsearch Setup
-
-This tool depends on [Dirsearch](https://github.com/maurosoria/dirsearch).
-
-To set it up:
+### 2. Pull Dirsearch
 
 ```bash
 git clone https://github.com/maurosoria/dirsearch.git
 ```
 
-Then copy or move the cloned `dirsearch/` folder into this repo directory.
+Leave the `dirsearch/` folder inside the repo, **or** export its path (next step).
 
----
-
-## 📌 Prerequisites
-
-Ensure you have the following installed:
-
-* `nmap`
-* `jq` (for JSON parsing from crt.sh)
-* `curl`
-* `bash` (preferably GNU Bash)
-* Python 3 (for Dirsearch)
-
-To install jq (Linux):
+### 3. Install prerequisites
 
 ```bash
-sudo apt install jq
+sudo apt update
+sudo apt install nmap jq curl python3 -y
 ```
 
----
-
-## 🚀 How to Run the Tool
-
-Make the script executable:
+### 4. Make the script executable
 
 ```bash
 chmod +x recon.sh
 ```
 
-### 🔹 Basic Usage
-
-Run full recon on a single domain:
-
-```bash
-./recon.sh -m all example.com
-```
-
-Scan only with **nmap**:
-
-```bash
-./recon.sh -m nmap-only example.com
-```
-
-Scan only with **dirsearch**:
-
-```bash
-./recon.sh -m dirsearch-only example.com
-```
-
-Scan only with **crt.sh**:
-
-```bash
-./recon.sh -m crt-only example.com
-```
-
 ---
 
-### 🔹 Multi-domain Scan
+## ⚙️ Optional PATH tweak
 
-You can scan multiple domains in one go:
-
-```bash
-./recon.sh -m all example.com example2.com
-```
-
-Or with specific scan mode:
-
-```bash
-./recon.sh -m nmap-only example.com example2.com
-```
-
----
-
-### 🔹 Interactive Mode
-
-Let the tool prompt you for domain input dynamically:
-
-```bash
-./recon.sh -i -m all
-```
-
-Then follow the prompt and type domains one by one. Type `quit` to exit.
-
----
-
-## 📁 Output Format
-
-Each scan will generate:
-
-```
-<domain>_recon/
-├── nmap            # Nmap scan results
-├── dirsearch       # Dirsearch results
-├── crt             # crt.sh JSON output
-└── report          # Combined master report
-```
-
-Sample output from `report`:
-
-```
-This scan was created on Wed Jul 10 23:52:10 IST 2025
-Results for Nmap:
-80/tcp  open   http
-443/tcp open   https
-
-Results for Dirsearch:
-/index.html [200 OK]
-/admin/ [403 Forbidden]
-
-Results for crt.sh:
-example.com
-sub.example.com
-```
-
----
-
-## 🛠️ Modify the Dirsearch Path (Optional)
-
-If you want to run `dirsearch.py` from anywhere, add it to your PATH:
+To call `dirsearch.py` from anywhere:
 
 ```bash
 export PATH="$PWD/dirsearch:$PATH"
+# add the same line to ~/.bashrc for permanence
 ```
-
-To make this permanent, add the above line to `~/.bashrc` or `~/.bash_profile`.
 
 ---
 
-## 📸 Screenshots (Replace below with your own)
+## 🏃‍♂️ Usage
 
-### ✔️ Example Run
+| Mode           | Command                                    | Description                             |
+| -------------- | ------------------------------------------ | --------------------------------------- |
+| Full scan      | `./recon.sh -m all example.com`            | Runs Nmap + Dirsearch + crt.sh          |
+| Nmap only      | `./recon.sh -m nmap-only example.com`      | Just ports                              |
+| Dirsearch only | `./recon.sh -m dirsearch-only example.com` | Directory brute‑force                   |
+| crt.sh only    | `./recon.sh -m crt-only example.com`       | Pull cert subdomains                    |
+| Multi‑domain   | `./recon.sh -m all example.com test.com`   | Batch scan                              |
+| Interactive    | `./recon.sh -i -m all`                     | Type domains one‑by‑one, `quit` to exit |
 
-```
-$ ./recon.sh -m all scanme.nmap.org
-
-This scan was created on Wed Jul 10 23:52:10 IST 2025
-Creating directory scanme.nmap.org_recon.
-Running Nmap scan...
-Running Dirsearch scan...
-Running crt.sh scan...
-Generating report...
-```
-<img width="796" height="418" alt="Screenshot 2025-07-10 232911" src="https://github.com/user-attachments/assets/440d2df2-3507-443d-94b8-b4cc6c368daf" />
-<img width="803" height="414" alt="Screenshot 2025-07-10 233206" src="https://github.com/user-attachments/assets/07f4926d-bbad-4ce8-b594-d542e7824e1b" />
+> **Tip:** combine `-i` and specific modes for on‑the‑fly targeted scans.
 
 ---
 
-## 🧠 Advanced Features
+## 📁 Output
 
-* ✅ Supports multiple domain scanning
-* ✅ Interactive mode with live input
-* ✅ Modular functions using `scan.lib`
-* ✅ Report generation using `jq` and `grep`
-* ✅ Uses regex filtering to clean Nmap output
-* ✅ Compatible with `crt.sh` JSON API
+Each target produces a folder:
+
+```
+example.com_recon/
+├── nmap          # cleaned port list
+├── dirsearch     # dirsearch simple report
+├── crt           # raw JSON from crt.sh
+└── report        # consolidated human‑readable report
+```
 
 ---
 
-## 🔐 Disclaimer
+## 🖼️ Screenshots
 
-This tool is intended for educational and legal penetration testing use only. Do **not** scan systems or domains without explicit permission.
+> Replace these placeholder paths with your own images.
+<img width="790" height="268" alt="Screenshot 2025-07-10 233330" src="https://github.com/user-attachments/assets/b1ff4152-8643-4e7e-a002-e627588430d9" />
+
+<img width="803" height="414" alt="Screenshot 2025-07-10 233206" src="https://github.com/user-attachments/assets/b5f37a7c-fed6-47f8-afae-e1e0af97b066" />
+
+---
+
+## 🧩 Extending
+
+* All scan logic lives in **`scan.lib`** – drop in new functions (e.g. `subfinder_scan`) and call them in `recon.sh`.
+* Use `jq`, `grep`, or custom parsers to normalise tool output before appending to the master report.
+
+---
+
+## 🔐 Legal
+
+Use **only** on targets you own or have explicit permission to test.
+The author takes no responsibility for misuse.
 
 ---
 
 ## 🙌 Credits
 
-* Developed by Tanishq Ingole
+* Book inspiration: *Web Hacking Reconnaissance* (NoStarch Press)
+* Tools: [Nmap](https://nmap.org), [Dirsearch](https://github.com/maurosoria/dirsearch), [crt.sh](https://crt.sh)
 
 ---
 
 ## 📜 License
 
-MIT License
+This project is released under the MIT License – see [`LICENSE`](LICENSE) for details.
 
 ```
 
----
+### What changed vs. the previous draft?
 
-Let me know your GitHub repo link or username if you'd like me to personalize the clone URL or add other sections like badges (build status, license, etc).
+1. **Clone URL:** now points to `https://github.com/imcoder44/Recon.git`.
+2. **Badges:** added shields.io badges for license, last commit, and open issues.
+3. **Username references:** switched to **imcoder44** everywhere.
+4. **Minor polish:** tightened wording, clarified optional PATH step.
+
+
 ```
